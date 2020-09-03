@@ -2,20 +2,20 @@ import numpy as np
 import pandas as pd
 from keras.callbacks import Callback
 from keras.optimizers import SGD
-from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential, load_model
 from keras.layers import Dense, LSTM, Dropout
 import matplotlib.pyplot as plt
 import os
 from keras.utils.vis_utils import plot_model
 from tensorflow.keras import regularizers
-from utils import sequentialize, split_dataset
+from utils import sequentialize, split_dataset, data_scale
 
 
 
-memory = 64
+memory = 144
+epoch = 8
 batch_size = 32
-dropout_ratio = 0.2
+dropout_ratio = 0.
 training_data_ratio = 0.9
 
 dataset_discharge = pd.read_csv("data/discharge/compiano/compiano-discharge-2013-2016.csv",
@@ -35,11 +35,10 @@ dataset_discharge = dataset_discharge.values
 
 dataset_lenght = dataset_discharge.shape[0]
 
+# TODO normalize subtracting the mean and diving for standard deviation
 
-#sc_discharge = MinMaxScaler(feature_range=(0, 1))
-#dataset_discharge[:, 0] = sc_discharge.fit_transform(dataset_discharge[:, 0].reshape(1, -1))
-#sc_rain = MinMaxScaler(feature_range=(0,1))
-#dataset_discharge[:,2] = sc_rain.fit_transform(dataset_discharge[:,2].reshape(1,-1))
+#dataset_discharge[:, 0], sc_discharge = data_scale(dataset_discharge[:,0])
+#dataset_discharge[:,2], sc_rain = data_scale(dataset_discharge[:,2])
 
 
 x_dataset, y_dataset = sequentialize(dataset_discharge,memory)
@@ -54,14 +53,18 @@ train_y, val_y = split_dataset(y_dataset, training_data_ratio)
 #real_discharge = y_dataset[train_dataset_limit+memory:]
 #dates = dates[train_dataset_limit+memory:]
 
-
-if os.path.exists("model.h5"):
+model_file_name = "model"+str(epoch)+".h5"
+if os.path.exists(model_file_name):
     print("loading model")
-    regressor = load_model("model.h5")
+    regressor = load_model(model_file_name)
 else:
-    regressor = Sequential()
-    regressor.add(LSTM(units=memory, return_sequences=False, dropout=dropout_ratio, input_shape=(memory,3)))
-    regressor.add(Dense(1))
+    regressor = Sequential([
+        LSTM(units=memory, return_sequences=True, input_shape=(memory,3)),
+        Dropout(dropout_ratio),
+        LSTM(units=memory),
+        Dense(1)
+    ])
+
 
     #opt = SGD(lr=0.01, momentum=0.9, learning_rate=1e-18, clipvalue=0.5)
     regressor.compile(optimizer='adam', loss='mean_squared_error')
@@ -78,24 +81,24 @@ class LossHistory(Callback):
 
 history = LossHistory()
 
-#regressor.fit(train_x, train_y, validation_data=(val_x,val_y) verbose=2, epochs=8, batch_size=batch_size)
-#regressor.save("model.h5")
+regressor.fit(train_x, train_y, validation_data=(val_x,val_y), epochs=epoch, batch_size=batch_size)
+regressor.save(model_file_name)
 #print(history.losses)
 
 #fig1 = plt.figure(1)
 #plt.plot(history.losses, color='green', label='loss')
 
 predicted_discharge = np.array(regressor.predict(val_x))
-#predicted_discharge = predicted_discharge*sc_discharge.scale_
+#predicted_discharge = sc_discharge.inverse_transform(predicted_discharge)
 
 
 #TODO plot dates
 
 fig2 = plt.figure(2)
 # Visualising the results
-plt.plot(val_y[:100], color = 'green', label = 'Real discharge')
-plt.plot(val_x[:100,-1,-1], color= 'blue', label='Rain')
-plt.plot(predicted_discharge[:100], color = 'red', label = 'Predicted discharge')
+plt.plot(val_y, color = 'green', label = 'Real discharge')
+#plt.plot(val_x[:,-1,-1], color= 'blue', label='Rain')
+plt.plot(predicted_discharge, color = 'red', label = 'Predicted discharge')
 plt.title('Discharge Prediction')
 plt.xlabel('Time')
 plt.ylabel('Discharge')

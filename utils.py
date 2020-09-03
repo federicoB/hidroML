@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 def sequentialize(arr, seq_lenght):
     early_stopping = arr.shape[0] - seq_lenght - 1
@@ -14,3 +15,9 @@ def split_dataset(arr,ratio):
     train = arr[:dataset_limit]
     val = arr[dataset_limit:]
     return train, val
+
+def data_scale(arr):
+    scaler = MinMaxScaler(feature_range=(0,1))
+    scaler.fit(arr.reshape(-1,1))
+    new_arr = (arr - scaler.data_min_) / (scaler.data_max_ - scaler.data_min_)
+    return new_arr, scaler
