@@ -21,3 +21,6 @@ def data_scale(arr):
     scaler.fit(arr.reshape(-1,1))
     new_arr = (arr - scaler.data_min_) / (scaler.data_max_ - scaler.data_min_)
     return new_arr, scaler
+
+def data_de_scale(arr,scaler):
+    return None
