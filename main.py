@@ -3,7 +3,7 @@ import pandas as pd
 from keras.callbacks import Callback
 from keras.optimizers import SGD
 from keras.models import Sequential, load_model
-from keras.layers import Dense, LSTM, Dropout, Activation
+from keras.layers import Dense, LSTM, Activation
 from keras.activations import relu
 import matplotlib.pyplot as plt
 import os
@@ -24,7 +24,7 @@ dataset_rain = pd.read_csv("data/rain/vetto/vetto-rain-2013-2016.csv",
                            parse_dates=[0], index_col=0)
 
 # (to save space in file) create new column as index
-#dataset_discharge['dayofyear'] = dataset_discharge.index.dayofyear
+dataset_discharge['dayofyear'], _ = data_scale(dataset_discharge.index.dayofyear.values)
 dataset_discharge['rain'] = dataset_rain.values
 
 dataset_discharge = dataset_discharge.dropna()
@@ -51,9 +51,9 @@ if os.path.exists(model_file_name):
     regressor = load_model(model_file_name)
 else:
     regressor = Sequential([
-        LSTM(units=memory, return_sequences=True, input_shape=(sample_lenght,dataset_discharge.shape[1])),
-        Dropout(dropout_ratio),
-        LSTM(units=memory),
+        Dense(units=3,input_shape=(sample_lenght,dataset_discharge.shape[1])),
+        LSTM(units=memory, return_sequences=True,dropout=dropout_ratio, ),
+        LSTM(units=memory, dropout=dropout_ratio),
         Dense(1),
         Activation(relu) #make output positive or zero
     ])
@@ -62,6 +62,7 @@ else:
     #opt = SGD(lr=0.01, momentum=0.9, learning_rate=1e-18, clipvalue=0.5)
     regressor.compile(optimizer='adam', loss='mean_squared_error')
     regressor.build(input_shape=(x_dataset.shape))
+    print(regressor.summary())
 #plot_model(regressor, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
 class LossHistory(Callback):
@@ -73,8 +74,7 @@ class LossHistory(Callback):
 
 
 history = LossHistory()
-
-regressor.fit(train_x, train_y, validation_data=(val_x,val_y), epochs=epoch, batch_size=batch_size, shuffle=True)
+regressor.fit(train_x, train_y, validation_data=(val_x,val_y), verbose=2, epochs=epoch, batch_size=batch_size, shuffle=True)
 regressor.save(model_file_name)
 #print(history.losses)
 
