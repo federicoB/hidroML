@@ -15,6 +15,7 @@ things to do:
 - check and correct alignment on val_y and prediction
 - find a way to proper use timeofyear (maybe valuation on 2 year)
 - encapsulate input loading/ feature engineering
+- add as output and input also river level
 
 check-out:
 - tranformers

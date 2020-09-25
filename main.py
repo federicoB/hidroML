@@ -12,7 +12,7 @@ from tensorflow.keras import regularizers
 from utils import sequentialize, split_dataset, data_scale
 
 memory = 48
-sample_lenght = memory
+sample_lenght = memory*3
 epoch = 3
 batch_size = 256
 dropout_ratio = 0.1
@@ -41,9 +41,11 @@ dataset_lenght = dataset_discharge.shape[0]
 
 
 x_dataset, y_dataset = sequentialize(dataset_discharge,sample_lenght)
+dates = dates[-y_dataset.shape[0]:]
 
 train_x, val_x = split_dataset(x_dataset, training_data_ratio)
 train_y, val_y = split_dataset(y_dataset, training_data_ratio)
+val_dates = dates[-val_y.shape[0]:]
 
 model_file_name = "model"+str(epoch)+".h5"
 if os.path.exists(model_file_name):
@@ -81,28 +83,36 @@ regressor.save(model_file_name)
 #fig1 = plt.figure(1)
 #plt.plot(history.losses, color='green', label='loss')
 
-step_ahead = 4
+step_ahead = 1
 i = step_ahead
 while True:
     predicted_discharge = np.array(regressor.predict(val_x))
     i -= 1
     if i == 0:
         break
+    # if there is still prediction to do
+    # sequentialize predicted discharge
     new_discharge, _ = sequentialize(predicted_discharge,sample_lenght)
-    val_x = np.stack((new_discharge[:,:,0], val_x[:new_discharge.shape[0],:,1]),axis=2)
+    # TODO find a solution for missing rain and timeoftheyear data
+    # create new network input with sequentialize discharge but keep old rain data
+    val_x = np.stack((new_discharge[:,:,0], val_x[:-new_discharge.shape[0],:,1], val_x[:-new_discharge.shape[0],:,2]),axis=2)
 
 #predicted_discharge = sc_discharge.inverse_transform(predicted_discharge)
 
-
-#TODO plot dates
-
-fig2 = plt.figure(2)
 # Visualising the results
-plt.plot(val_y[memory*(step_ahead-1):], color = 'green', label = 'Real discharge')
+plt.plot(val_dates[memory*(step_ahead-1):],val_y[memory*(step_ahead-1):], color = 'green', label = 'Real discharge')
 #plt.plot(val_x[:,-1,-1], color= 'blue', label='Rain')
-plt.plot(predicted_discharge, color = 'red', label = 'Predicted discharge')
+plt.plot(val_dates[memory*(step_ahead-1):],predicted_discharge, color = 'red', label = 'Predicted discharge')
+plt.text(0,1,"LSTM memory {} \n"
+        "sample lenght {} \n"
+        "epoch {} \n"
+        "batch_size {} \n"
+        "dropout_ratio {} \n"
+        "step_ahead {} \n"
+         .format(memory,sample_lenght,epoch,batch_size,dropout_ratio,step_ahead),
+         transform = plt.gca().transAxes)
 plt.title('Discharge Prediction')
 plt.xlabel('Time')
-plt.ylabel('Discharge')
+plt.ylabel('Discharge (m^3 / s)')
 plt.legend()
 plt.show()
