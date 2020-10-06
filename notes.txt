@@ -18,8 +18,10 @@ things to do:
 - add as output and input also river level
 
 check-out:
-- tranformers
-- Wesserstein loss
+- tranformers:
+    https://towardsdatascience.com/stock-predictions-with-state-of-the-art-transformer-and-time-embeddings-3a4485237de6
+    https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms
+- change data to variation
 
 things to show in report:
 training/evaluation loss to detect overfitting
