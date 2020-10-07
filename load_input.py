@@ -1,11 +1,20 @@
 import pandas as pd
 from utils import data_scale, sequentialize, split_dataset
 
+basin = "enza"
+river_station = "compiano"
+rain_station = "vetto"
+start_year = 2013
+end_year = 2016
+
 def load_input(sample_lenght, training_data_ratio):
-    dataset_discharge = pd.read_csv("data/discharge/compiano/compiano-discharge-2013-2016.csv",
+    dataset_discharge = pd.read_csv("data/level/{}/{}/{}-{}.csv".format(basin,river_station,start_year,end_year),
                                     parse_dates=[0], index_col=0)
-    dataset_rain = pd.read_csv("data/rain/vetto/vetto-rain-2013-2016.csv",
+    dataset_rain = pd.read_csv("data/rain/{}/{}/{}-{}.csv".format(basin,rain_station,start_year,end_year),
                                parse_dates=[0], index_col=0)
+
+    dataset_discharge['level'] = dataset_discharge['level'].rolling(48, center=True).mean()
+    dataset_rain['Rain'] = dataset_rain['Rain'].rolling(48 * 14, center=True).mean()
 
     # (to save space in file) create new column as index
     dataset_discharge['dayofyear'], _ = data_scale(dataset_discharge.index.dayofyear.values)
