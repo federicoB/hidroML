@@ -1,6 +1,10 @@
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
+def deltalize(arr):
+    arr = arr[1:] - arr[:-1]
+    return arr
+
 def sequentialize(arr, seq_lenght):
     early_stopping = arr.shape[0] - seq_lenght - 1
     x_dataset = np.zeros((early_stopping, seq_lenght, arr.shape[1]))
@@ -19,7 +23,7 @@ def split_dataset(arr,ratio):
 def data_scale(arr):
     scaler = MinMaxScaler(feature_range=(0,1))
     scaler.fit(arr.reshape(-1,1))
-    new_arr = (arr - scaler.data_min_) / (scaler.data_max_ - scaler.data_min_)
+    new_arr = arr / (scaler.data_max_ - scaler.data_min_)
     return new_arr, scaler
 
 def data_de_scale(arr,scaler):
