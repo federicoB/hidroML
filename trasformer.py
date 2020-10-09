@@ -4,18 +4,29 @@ import os, datetime
 import tensorflow as tf
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
+
 print('Tensorflow version: {}'.format(tf.__version__))
 
 import matplotlib.pyplot as plt
+
 plt.style.use('seaborn')
 
 import warnings
+
 warnings.filterwarnings('ignore')
+
 
 class Time2Vector(Layer):
     def __init__(self, seq_len, **kwargs):
         super(Time2Vector, self).__init__()
         self.seq_len = seq_len
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'seq_len': self.seq_len
+        })
+        return config
 
     def build(self, input_shape):
         self.weights_linear = self.add_weight(name='weight_linear',
@@ -47,11 +58,20 @@ class Time2Vector(Layer):
         time_periodic = tf.expand_dims(time_periodic, axis=-1)  # (batch, seq_len, 1)
         return tf.concat([time_linear, time_periodic], axis=-1)  # (batch, seq_len, 2)
 
+
 class SingleAttention(Layer):
     def __init__(self, d_k, d_v):
         super(SingleAttention, self).__init__()
         self.d_k = d_k
         self.d_v = d_v
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'd_k': self.d_k,
+            'd_v': self.d_v
+        })
+        return config
 
     def build(self, input_shape):
         self.query = Dense(self.d_k, input_shape=input_shape, kernel_initializer='glorot_uniform',
@@ -73,25 +93,38 @@ class SingleAttention(Layer):
         attn_out = tf.matmul(attn_weights, v)
         return attn_out
 
+
 class MultiAttention(Layer):
-  def __init__(self, d_k, d_v, n_heads):
-    super(MultiAttention, self).__init__()
-    self.d_k = d_k
-    self.d_v = d_v
-    self.n_heads = n_heads
-    self.attn_heads = list()
+    def __init__(self, d_k, d_v, n_heads):
+        super(MultiAttention, self).__init__()
+        self.d_k = d_k
+        self.d_v = d_v
+        self.n_heads = n_heads
+        self.attn_heads = list()
 
-  def build(self, input_shape):
-    for n in range(self.n_heads):
-      self.attn_heads.append(SingleAttention(self.d_k, self.d_v))
-    # TODO parametrize input feature now 5
-    self.linear = Dense(5, input_shape=input_shape, kernel_initializer='glorot_uniform', bias_initializer='glorot_uniform')
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'd_k': self.d_k,
+            'd_v': self.d_v,
+            'n_heads': self.n_heads,
+            'attn_head': self.attn_heads
+        })
+        return config
 
-  def call(self, inputs):
-    attn = [self.attn_heads[i](inputs) for i in range(self.n_heads)]
-    concat_attn = tf.concat(attn, axis=-1)
-    multi_linear = self.linear(concat_attn)
-    return multi_linear
+    def build(self, input_shape):
+        for n in range(self.n_heads):
+            self.attn_heads.append(SingleAttention(self.d_k, self.d_v))
+        # TODO parametrize input feature now 5
+        self.linear = Dense(5, input_shape=input_shape, kernel_initializer='glorot_uniform',
+                            bias_initializer='glorot_uniform')
+
+    def call(self, inputs):
+        attn = [self.attn_heads[i](inputs) for i in range(self.n_heads)]
+        concat_attn = tf.concat(attn, axis=-1)
+        multi_linear = self.linear(concat_attn)
+        return multi_linear
+
 
 class TransformerEncoder(Layer):
     def __init__(self, d_k, d_v, n_heads, ff_dim, dropout=0.1, **kwargs):
@@ -102,6 +135,17 @@ class TransformerEncoder(Layer):
         self.ff_dim = ff_dim
         self.attn_heads = list()
         self.dropout_rate = dropout
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'd_k': self.d_k,
+            'd_v': self.d_v,
+            'n_heads': self.n_heads,
+            'ff_dim': self.ff_dim,
+            'dropout': self.dropout_rate
+        })
+        return config
 
     def build(self, input_shape):
         self.attn_multi = MultiAttention(self.d_k, self.d_v, self.n_heads)
