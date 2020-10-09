@@ -1,7 +1,11 @@
 things to do:
 - check and correct alignment on val_y and prediction
 - find a way to proper use timeofyear (maybe valuation on 2 year)
-- is good to use rolling averange?
+- add more data
+- extract plotting
+- extract max absolute error metric properly
+- setup automatic hyperparameter tuning
+- upload dataset on public hosting
 
 check-out:
 - tranformers:
@@ -14,6 +18,7 @@ training/evaluation loss to detect overfitting
 precision of prediction depending of distance from last ground truth
 (also depending of timestep number)
 experiment with different rain measurement
+graph on precision based on number of past years data
 
 
 cite https://arxiv.org/abs/1303.5778 introduction to stacked LSTM

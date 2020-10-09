@@ -1,0 +1,31 @@
+max error 0.28m
+
+DENSE, LSTM, LSTM, DENSE
+memory = 64
+sample_lenght = 48*3
+epoch = 5
+batch_size = 256
+dropout_ratio = 0.2
+training_data_ratio = 0.9
+
+
+max error 0.36m
+
+DENSE, LSTM, LSTM, DENSE
+memory = 48
+sample_lenght = memory*3
+epoch = 5
+batch_size = 256
+dropout_ratio = 0.2
+training_data_ratio = 0.9
+
+
+max error 0.41 m
+
+DENSE, LSTM, LSTM, DENSE
+memory = 64*2
+sample_lenght = 48*3
+epoch = 5
+batch_size = 256
+dropout_ratio = 0.2
+training_data_ratio = 0.9
