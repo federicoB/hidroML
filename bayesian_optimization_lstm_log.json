@@ -1,0 +1,5 @@
+{"target": -0.4182605838775635, "params": {"memory": 109.08954518504865, "sample_lenght": 185.52177234742385}, "datetime": {"datetime": "2020-10-10 20:02:33", "elapsed": 0.0, "delta": 0.0}}
+{"target": -0.5891288018226624, "params": {"memory": 4.028822453970911, "sample_lenght": 80.18780830322362}, "datetime": {"datetime": "2020-10-10 20:02:55", "elapsed": 21.717606, "delta": 21.717606}}
+{"target": -0.5115528798103333, "params": {"memory": 107.81050167121126, "sample_lenght": 185.1260182189571}, "datetime": {"datetime": "2020-10-10 20:06:51", "elapsed": 257.674657, "delta": 235.957051}}
+{"target": -0.4546242356300354, "params": {"memory": 213.16048078760394, "sample_lenght": 170.35475512400546}, "datetime": {"datetime": "2020-10-10 20:15:47", "elapsed": 793.845409, "delta": 536.170752}}
+{"target": -0.4182605838775635, "params": {"memory": 109.08954518504865, "sample_lenght": 185.52177234742385}, "datetime": {"datetime": "2020-10-10 20:02:23", "elapsed": 0.0, "delta": 0.0}}

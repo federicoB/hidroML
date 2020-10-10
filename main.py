@@ -92,8 +92,8 @@ text = "LSTM memory {} " \
 
 #plot_level_prediction(val_dates, predicted_level,val_y,step_ahead, text)
 
-bayesian_opt_file = 'bayesian_optimization_log.json'
-backup_file = 'bayesian_optimization_log_bck.json'
+bayesian_opt_file = 'bayesian_optimization_lstm_log.json'
+backup_file = 'bayesian_optimization_lstm_log_bck.json'
 from shutil import copyfile
 import os
 if os.path.exists(bayesian_opt_file):
