@@ -3,7 +3,6 @@ from keras.layers import Dense, LSTM
 from keras.models import Sequential
 
 from load_input import load_input
-from metric import max_absolute_error
 from utils import sequentialize
 from data_preprocessing.plotting.level_prediction import plot_level_prediction
 from bayes_opt import BayesianOptimization
@@ -38,7 +37,7 @@ def lstm_training(memory,sample_lenght):
     ])
 
     # opt = SGD(lr=0.01, momentum=0.9, learning_rate=1e-18, clipvalue=0.5)
-    regressor.compile(optimizer='adam', loss='mean_squared_error', metrics=[max_absolute_error])
+    regressor.compile(optimizer='adam', loss='mean_squared_error')
     regressor.build(input_shape=(train_x.shape))
     #print(regressor.summary())
     # plot_model(regressor, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
@@ -106,8 +105,8 @@ logger = JSONLogger(path=backup_file)
 optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
 optimizer.maximize(
-    init_points=2,
-    n_iter=2,
+    init_points=16,
+    n_iter=18,
 )
 
 print("optimizer max")
