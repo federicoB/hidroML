@@ -13,6 +13,7 @@ warnings.filterwarnings('ignore')
 from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 from bayes_opt.util import load_logs
+from plot_lstm_bays_opt_posterio import plot_gp
 
 #memory = 64
 #sample_lenght = 48 * 3
@@ -101,16 +102,20 @@ if os.path.exists(bayesian_opt_file):
 
 print("New optimizer is now aware of {} points.".format(len(optimizer.space)))
 
-logger = JSONLogger(path=backup_file)
+logger = JSONLogger(path=bayesian_opt_file)
 optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
 optimizer.maximize(
-    init_points=16,
-    n_iter=18,
+    init_points=25,
+    n_iter=30,
 )
 
 print("optimizer max")
 print(optimizer.max)
+
+
+
+#plot_gp(optimizer)
 
 
 for i, res in enumerate(optimizer.res):

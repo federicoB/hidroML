@@ -15,7 +15,7 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-
+# output perioding and noperiod time embedding
 class Time2Vector(Layer):
     def __init__(self, seq_len, **kwargs):
         super(Time2Vector, self).__init__()
@@ -50,7 +50,7 @@ class Time2Vector(Layer):
                                              trainable=True)
 
     def call(self, x):
-        x = tf.math.reduce_mean(x[:, :, :4], axis=-1)  # Convert (batch, seq_len, 5) to (batch, seq_len)
+        x = tf.math.reduce_mean(x, axis=-1)  # Convert (batch, seq_len, n_feature) to (batch, seq_len)
         time_linear = self.weights_linear * x + self.bias_linear
         time_linear = tf.expand_dims(time_linear, axis=-1)  # (batch, seq_len, 1)
 
@@ -154,6 +154,7 @@ class TransformerEncoder(Layer):
 
         self.ff_conv1D_1 = Conv1D(filters=self.ff_dim, kernel_size=1, activation='relu')
         # TODO parametrize input feature now 5, old comment: input_shape[0]=(batch, seq_len, 7), input_shape[0][-1]=7
+        # 5 because level,rain,timeofyear,periodTimemebedding,nonPerioditTimeEmbedding
         self.ff_conv1D_2 = Conv1D(filters=5, kernel_size=1)
         self.ff_dropout = Dropout(self.dropout_rate)
         self.ff_normalize = LayerNormalization(input_shape=input_shape, epsilon=1e-6)

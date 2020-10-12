@@ -2,10 +2,11 @@ things to do:
 - check and correct alignment on val_y and prediction
 - find a way to proper use timeofyear (maybe valuation on 2 year)
 - add more data
-- extract plotting
 - extract max absolute error metric properly
 - setup automatic hyperparameter tuning
 - upload dataset on public hosting
+- rolling averange? only for visualization?
+- increase sample lenght to recognize seasonal patterns or dayofyear is enough?
 
 check-out:
 - tranformers:

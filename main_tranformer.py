@@ -10,17 +10,17 @@ warnings.filterwarnings('ignore')
 
 from load_input import load_input
 from utils import sequentialize
-from trasformer import Time2Vector, TransformerEncoder
+from trasformer import Time2Vector, TransformerEncoder, SingleAttention, MultiAttention
 from data_preprocessing.plotting.level_prediction import plot_level_prediction
 
-sample_lenght = 32
-epoch = 2
+sample_lenght = 248
+epoch = 5
 batch_size = 32
 dropout_ratio = 0.2
 training_data_ratio = 0.9
 d_k = 256
 d_v = 256
-n_heads = 12
+n_heads = 1
 ff_dim = 256
 
 train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_lenght, training_data_ratio)
@@ -32,11 +32,13 @@ attn_layer3 = TransformerEncoder(d_k, d_v, n_heads, ff_dim)
 
 '''Construct model'''
 in_seq = Input(shape=(sample_lenght, 3))
-x = time_embedding(in_seq)
+x = time_embedding(in_seq) #output features 2: period and nonperiodic time embedding
 x = Concatenate(axis=-1)([in_seq, x])
+# triplicate input (query,key,value)
 x = attn_layer1((x, x, x))
 x = attn_layer2((x, x, x))
 x = attn_layer3((x, x, x))
+# No decoder but regression
 x = GlobalAveragePooling1D(data_format='channels_first')(x)
 x = Dropout(0.1)(x)
 x = Dense(64, activation='relu')(x)
@@ -51,7 +53,7 @@ regressor.build(input_shape=(train_x.shape))
 print(regressor.summary())
 #plot_model(regressor, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
-#regressor = load_model("model1.h5", custom_objects={'max_absolute_error':max_absolute_error})
+#regressor = load_model("model5.h5", custom_objects={'Time2Vector': Time2Vector,'SingleAttention': SingleAttention,'MultiAttention' : MultiAttention,'TransformerEncoder' : TransformerEncoder})
 
 regressor.fit(train_x, train_y, validation_data=(val_x,val_y), epochs=epoch, batch_size=batch_size, shuffle=True)
 regressor.save("model"+str(epoch)+".h5")
