@@ -15,9 +15,6 @@ def load_input(sample_lenght, training_data_ratio):
     dataset_rain = pd.read_csv("data/rain/{}/{}/{}-{}.csv".format(basin, rain_station, start_year, end_year),
                                parse_dates=[0], index_col=0)
 
-    dataset_level['level'] = dataset_level['level'].rolling(6).mean()
-    dataset_rain['Rain'] = dataset_rain['Rain'].rolling(6).mean()
-
     # (to save space in file) create new column as index
     dataset_level['rain'] = dataset_rain.values
     dataset_level['dayofyear'], _ = data_scale(dataset_level.index.dayofyear.values)
