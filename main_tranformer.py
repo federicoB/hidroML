@@ -20,7 +20,7 @@ from bayes_opt.util import load_logs
 
 sample_lenght = 8
 epoch = 1
-batch_size = 64
+batch_size = 32
 dropout_ratio = 0.2
 training_data_ratio = 0.9
 d_k = 4
@@ -28,7 +28,7 @@ d_v = 4
 n_heads = 1
 ff_dim = 4
 
-pbounds = {'sample_lenght': (8,256), 'd_k':(4,256), 'd_v':(4,256),'n_heads':(1,16), 'ff_dim':(4,256)}
+pbounds = {'sample_lenght': (8,256), 'd_k':(4,256), 'd_v':(4,256),'n_heads':(1,8), 'ff_dim':(4,256)}
 
 def trasformer_training(sample_lenght, d_k, d_v, n_heads, ff_dim):
     sample_lenght = int(sample_lenght)
