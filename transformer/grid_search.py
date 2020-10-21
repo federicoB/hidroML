@@ -27,21 +27,21 @@ training_data_ratio = 0.9
 
 params = {
     'sample_lenght':[144],
-    'd_k': (121,124,1),
-    'd_v': (46,53,1),
-    'ff_dim': (217,220,1),
+    'd_k': list(range(121,124,1)),
+    'd_v': list(range(46,53,1)),
+    'ff_dim': list(range(217,220,1)),
     'n_heads' : [1]
 }
 
-def grid_search_wrapper(train_x, train_y, x_val, y_val, param):
+def grid_search_wrapper(train_x, train_y, x_val, y_val, params):
     return trasformer_training(train_x, train_y, x_val, y_val,
-        params['sample_lenght'][0],
-        params['d_k'][0],
-        params['d_v'][0],
-        params['n_heads'][0],
-        params['ff_dim'][0]
+        params['sample_lenght'],
+        params['d_k'],
+        params['d_v'],
+        params['n_heads'],
+        params['ff_dim']
     )
 
 train_x, train_y, val_x, val_y, val_dates, level_start = load_input(params['sample_lenght'][0], training_data_ratio)
 
-talos.Scan(train_x,train_y, model= grid_search_wrapper, params=params, experiment_name='experiment')
+talos.Scan(train_x,train_y,x_val=val_x, y_val=val_y, model= grid_search_wrapper, params=params, experiment_name='experiment')

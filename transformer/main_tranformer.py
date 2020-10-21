@@ -41,12 +41,12 @@ def trasformer_training(train_x, train_y, val_x, val_y, sample_lenght, d_k, d_v,
 
 
     regressor.build(input_shape=(train_x.shape))
-    print(regressor.summary())
+    #print(regressor.summary())
     #plot_model(regressor, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
     #regressor = load_model("model5.h5", custom_objects={'Time2Vector': Time2Vector,'SingleAttention': SingleAttention,'MultiAttention' : MultiAttention,'TransformerEncoder' : TransformerEncoder})
 
-    regressor.fit(train_x, train_y, validation_data=(val_x,val_y), epochs=epoch, batch_size=batch_size, shuffle=True)
+    history = regressor.fit(train_x, train_y, validation_data=(val_x,val_y), epochs=epoch, batch_size=batch_size, shuffle=True, verbose=2)
     regressor.save("model"+str(epoch)+".h5")
 
     #fig1 = plt.figure(1)
@@ -68,7 +68,7 @@ def trasformer_training(train_x, train_y, val_x, val_y, sample_lenght, d_k, d_v,
 
     #predicted_discharge = sc_discharge.inverse_transform(predicted_discharge)
 
-    return predicted_level, regressor
+    return history, regressor
 
 #print("max error {:.2f} m".format(metric))
 #print("max error was on {}".format(val_dates[np.argmax(difference)]))

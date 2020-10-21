@@ -5,7 +5,7 @@ things to do:
 - extract max absolute error metric properly
 - upload dataset on public hosting
 - rolling averange? only for visualization?
-- trasformer: understand if periodic/non-periodic time embedding is necessary
+- transformer: understand if periodic/non-periodic time embedding is necessary
 
 trasformer hyperparamter analysis:
 - multihead doesn't look necessary, and increase computation time considerably

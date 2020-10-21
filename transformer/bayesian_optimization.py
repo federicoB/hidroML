@@ -20,10 +20,11 @@ def bayesian_wrapper(sample_length,d_k,d_v,n_heads,ff_dim):
     n_heads = int(n_heads)
     ff_dim = int(ff_dim)
     train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_length, training_data_ratio)
-    predicted_level = trasformer_training(train_x,train_y,val_x,val_y,
+    history, model = trasformer_training(train_x,train_y,val_x,val_y,
                         sample_length,d_k,d_v,n_heads,ff_dim)
 
-    x = predicted_level.flatten()
+
+    x = model.predict(val_x).flatten()
     difference = np.abs(x-val_y)
     return -np.max(difference)
 
