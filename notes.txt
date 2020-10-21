@@ -3,10 +3,16 @@ things to do:
 - find a way to proper use timeofyear (maybe valuation on 2 year)
 - add more data
 - extract max absolute error metric properly
-- setup automatic hyperparameter tuning
 - upload dataset on public hosting
 - rolling averange? only for visualization?
-- increase sample lenght to recognize seasonal patterns or dayofyear is enough?
+- trasformer: understand if periodic/non-periodic time embedding is necessary
+
+trasformer hyperparamter analysis:
+- multihead doesn't look necessary, and increase computation time considerably
+- ff-dim: explore better areas 121-124
+- d_k: explore better area 46-53
+- d_v: explore better area 217-220
+
 
 check-out:
 - tranformers:
