@@ -1,19 +1,12 @@
+import os
+
 import numpy as np
-import pandas as pd
-import os, datetime
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' #disable tensorflow INFO logs
+import warnings
+warnings.filterwarnings('ignore')
 import tensorflow as tf
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
-
-print('Tensorflow version: {}'.format(tf.__version__))
-
-import matplotlib.pyplot as plt
-
-plt.style.use('seaborn')
-
-import warnings
-
-warnings.filterwarnings('ignore')
 
 # output perioding and noperiod time embedding
 class Time2Vector(Layer):

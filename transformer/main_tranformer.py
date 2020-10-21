@@ -1,44 +1,21 @@
 import numpy as np
-import pandas as pd
-import tensorflow as tf
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' #disable tensorflow INFO logs
+import warnings
+warnings.filterwarnings('ignore')
+from transformer.trasformer import Time2Vector, TransformerEncoder
 from tensorflow.keras.layers import *
 from tensorflow.keras.models import *
 
-print('Tensorflow version: {}'.format(tf.__version__))
+from metric import max_absolute_error
 
-import warnings
-warnings.filterwarnings('ignore')
-
-from load_input import load_input
 from utils import sequentialize
-from trasformer import Time2Vector, TransformerEncoder, SingleAttention, MultiAttention
-from data_preprocessing.plotting.level_prediction import plot_level_prediction
-from bayes_opt import BayesianOptimization
-from bayes_opt.logger import JSONLogger
-from bayes_opt.event import Events
-from bayes_opt.util import load_logs
 
-sample_lenght = 8
 epoch = 1
 batch_size = 32
 dropout_ratio = 0.2
-training_data_ratio = 0.9
-d_k = 4
-d_v = 4
-n_heads = 1
-ff_dim = 4
 
-pbounds = {'sample_lenght': (8,256), 'd_k':(4,256), 'd_v':(4,256),'n_heads':(1,8), 'ff_dim':(4,256)}
-
-def trasformer_training(sample_lenght, d_k, d_v, n_heads, ff_dim):
-    sample_lenght = int(sample_lenght)
-    d_k = int(d_k)
-    d_v = int(d_v)
-    n_heads = int(n_heads)
-    ff_dim = int(ff_dim)
-
-    train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_lenght, training_data_ratio)
-
+def trasformer_training(train_x, train_y, val_x, val_y, sample_lenght, d_k, d_v, n_heads, ff_dim):
     time_embedding = Time2Vector(sample_lenght)
     attn_layer1 = TransformerEncoder(d_k, d_v, n_heads, ff_dim)
     attn_layer2 = TransformerEncoder(d_k, d_v, n_heads, ff_dim)
@@ -60,7 +37,7 @@ def trasformer_training(sample_lenght, d_k, d_v, n_heads, ff_dim):
     out = Dense(1, activation='linear')(x)
 
     regressor = Model(inputs=in_seq, outputs=out)
-    regressor.compile(loss='mse', optimizer='adam', metrics=['mae', 'mape'])
+    regressor.compile(loss='mse', optimizer='adam', metrics=[max_absolute_error])
 
 
     regressor.build(input_shape=(train_x.shape))
@@ -91,45 +68,7 @@ def trasformer_training(sample_lenght, d_k, d_v, n_heads, ff_dim):
 
     #predicted_discharge = sc_discharge.inverse_transform(predicted_discharge)
 
-    x = predicted_level.flatten()
-    y = pd.DataFrame(val_y[(step_ahead-1):]).rolling(6).mean().fillna(method='bfill').values.reshape(-1)
-    difference = np.abs(x-y)
-    return -np.max(difference)
-
-optimizer = BayesianOptimization(
-    f=trasformer_training,
-    pbounds=pbounds,
-    random_state=1
-)
-
-bayesian_opt_file = 'bayesian_optimization_trasformer_log.json'
-backup_file = 'bayesian_optimization_trasformer_log_bck.json'
-from shutil import copyfile
-import os
-if os.path.exists(bayesian_opt_file):
-    copyfile(bayesian_opt_file,backup_file)
-    load_logs(optimizer, logs=[bayesian_opt_file])
-
-print("New optimizer is now aware of {} points.".format(len(optimizer.space)))
-
-logger = JSONLogger(path=bayesian_opt_file)
-optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
-
-optimizer.maximize(
-    init_points=80,
-    n_iter=100,
-)
-
-print("optimizer max")
-print(optimizer.max)
-
-
-if os.path.exists(bayesian_opt_file):
-    with open(bayesian_opt_file, 'a') as outfile:
-            with open(backup_file) as infile:
-                outfile.write(infile.read())
-    os.remove(backup_file)
-
+    return predicted_level, regressor
 
 #print("max error {:.2f} m".format(metric))
 #print("max error was on {}".format(val_dates[np.argmax(difference)]))

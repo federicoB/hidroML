@@ -4,7 +4,6 @@ from keras.models import Sequential
 
 from load_input import load_input
 from utils import sequentialize
-from data_preprocessing.plotting.level_prediction import plot_level_prediction
 from bayes_opt import BayesianOptimization
 
 import warnings
@@ -13,7 +12,6 @@ warnings.filterwarnings('ignore')
 from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 from bayes_opt.util import load_logs
-from plot_lstm_bays_opt_posterio import plot_gp
 
 #memory = 64
 #sample_lenght = 48 * 3

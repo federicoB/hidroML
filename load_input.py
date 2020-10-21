@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from utils import data_scale, sequentialize, split_dataset, deltalize
 
 basin = "enza"
@@ -17,6 +16,10 @@ def load_input(sample_lenght, training_data_ratio):
 
     # (to save space in file) create new column as index
     dataset_level['rain'] = dataset_rain.values
+
+    #rolling averange on rain and level to remove noise
+    dataset_level = dataset_level.rolling(6).mean().fillna(method='bfill')
+
     dataset_level['dayofyear'], _ = data_scale(dataset_level.index.dayofyear.values)
 
     dataset = dataset_level.dropna()
@@ -40,6 +43,7 @@ def load_input(sample_lenght, training_data_ratio):
 
     train_x, val_x = split_dataset(x_dataset, training_data_ratio)
     train_y, val_y = split_dataset(y_dataset, training_data_ratio)
+
 
     val_dates = dates[-val_y.shape[0]:]
 
