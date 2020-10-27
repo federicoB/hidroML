@@ -19,6 +19,8 @@ from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 from bayes_opt.util import load_logs
 import talos
+# split GPU memory in two for two parallel jobs
+talos.utils.gpu_utils.parallel_gpu_jobs(0.5)
 
 from transformer.main_tranformer import trasformer_training
 
@@ -44,4 +46,4 @@ def grid_search_wrapper(train_x, train_y, x_val, y_val, params):
 
 train_x, train_y, val_x, val_y, val_dates, level_start = load_input(params['sample_lenght'][0], training_data_ratio)
 
-talos.Scan(train_x,train_y,x_val=val_x, y_val=val_y, model= grid_search_wrapper, params=params, experiment_name='experiment')
+talos.Scan(train_x,train_y,x_val=val_x, y_val=val_y, model= grid_search_wrapper, params=params, experiment_name='trasformer_hyperameter')

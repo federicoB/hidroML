@@ -2,10 +2,10 @@ things to do:
 - check and correct alignment on val_y and prediction
 - find a way to proper use timeofyear (maybe valuation on 2 year)
 - add more data
-- extract max absolute error metric properly
 - upload dataset on public hosting
-- rolling averange? only for visualization?
 - transformer: understand if periodic/non-periodic time embedding is necessary
+- it's possible there are methods/libraries for sequentialize better
+- bayesian optimization or grid search on optimizer hyperparameters
 
 trasformer hyperparamter analysis:
 - multihead doesn't look necessary, and increase computation time considerably
