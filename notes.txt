@@ -1,4 +1,5 @@
 things to do:
+- norm layer on lstm try to get best result, to find limit to lstm, consider also performance
 - check and correct alignment on val_y and prediction
 - add more data
 - transformer: understand if periodic/non-periodic time embedding is necessary
@@ -12,10 +13,7 @@ trasformer hyperparamter analysis:
 
 things to show in report:
 training/evaluation loss to detect overfitting
-precision of prediction depending of distance from last ground truth
-(also depending of timestep number)
+precision of prediction depending of distance from last ground truth (step ahead)
+(also depending of timestep number (sample_lenght))
 experiment with different rain measurement
 graph on precision based on number of past years data
-
-
-cite https://arxiv.org/abs/1303.5778 introduction to stacked LSTM
