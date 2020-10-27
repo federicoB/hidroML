@@ -1,24 +1,14 @@
 things to do:
 - check and correct alignment on val_y and prediction
-- find a way to proper use timeofyear (maybe valuation on 2 year)
 - add more data
-- upload dataset on public hosting
 - transformer: understand if periodic/non-periodic time embedding is necessary
-- it's possible there are methods/libraries for sequentialize better
 - bayesian optimization or grid search on optimizer hyperparameters
+- upload dataset on public hosting
 
 trasformer hyperparamter analysis:
-- multihead doesn't look necessary, and increase computation time considerably
-- ff-dim: explore better areas 121-124
-- d_k: explore better area 46-53
-- d_v: explore better area 217-220
+- repeat experiment with epoch > 1 for avoiding noise of not optimal initialization
+- current best param d_k=121 d_v=47 ff_dim=219
 
-
-check-out:
-- tranformers:
-    https://towardsdatascience.com/stock-predictions-with-state-of-the-art-transformer-and-time-embeddings-3a4485237de6
-    https://stats.stackexchange.com/questions/421935/what-exactly-are-keys-queries-and-values-in-attention-mechanisms
-- change data to variation
 
 things to show in report:
 training/evaluation loss to detect overfitting
