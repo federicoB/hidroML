@@ -5,6 +5,7 @@ things to do:
 - transformer: understand if periodic/non-periodic time embedding is necessary
 - bayesian optimization or grid search on optimizer hyperparameters
 - upload dataset on public hosting
+- compare results with other papers
 
 trasformer hyperparamter analysis:
 - repeat experiment with epoch > 1 for avoiding noise of not optimal initialization

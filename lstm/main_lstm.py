@@ -37,7 +37,7 @@ def lstm_training(train_x, train_y, val_x, val_y, sample_lenght, memory):
     # regressor = load_model("model1.h5", custom_objects={'max_absolute_error':max_absolute_error})
 
     history = regressor.fit(train_x, train_y, validation_data=(val_x, val_y), verbose=2, epochs=epoch, batch_size=batch_size)
-    regressor.save("model" + str(epoch) + ".h5")
+    #regressor.save("model" + str(epoch) + ".h5")
 
     # fig1 = plt.figure(1)
     # plt.plot(history.losses, color='green', label='loss')
