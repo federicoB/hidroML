@@ -1,5 +1,5 @@
 import numpy as np
-from keras.layers import Dense, LSTM
+from keras.layers import Dense, LSTM, BatchNormalization
 from keras.models import Sequential
 
 from load_input import load_input
@@ -10,19 +10,20 @@ warnings.filterwarnings('ignore')
 
 from metric import max_absolute_error
 
-epoch = 1
+epoch = 5
 batch_size = 256
 dropout_ratio = 0.2
 
 def lstm_training(train_x, train_y, val_x, val_y, sample_lenght, memory):
     memory = int(memory)
     sample_lenght = int(sample_lenght)
-    train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_lenght, training_data_ratio)
 
     regressor = Sequential([
         Dense(units=3, input_shape=(sample_lenght, train_x.shape[2])),
         LSTM(units=memory, return_sequences=True, dropout=dropout_ratio),
+        BatchNormalization(),
         LSTM(units=memory, dropout=dropout_ratio),
+        BatchNormalization(),
         Dense(1),
         # Activation(relu) #make output positive or zero
     ])
