@@ -9,6 +9,7 @@ from load_input import load_input
 from transformer.main_tranformer import trasformer_training
 
 training_data_ratio = 0.9
+epoch = 3
 
 pbounds = {'sample_length': (8,256), 'd_k':(4,256), 'd_v':(4,256),'n_heads':(1,8), 'ff_dim':(4,256)}
 
@@ -21,7 +22,7 @@ def bayesian_wrapper(sample_length,d_k,d_v,n_heads,ff_dim):
     ff_dim = int(ff_dim)
     train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_length, training_data_ratio)
     history, model = trasformer_training(train_x,train_y,val_x,val_y,
-                        sample_length,d_k,d_v,n_heads,ff_dim)
+                        epoch,sample_length,d_k,d_v,n_heads,ff_dim)
 
 
     x = model.predict(val_x).flatten()

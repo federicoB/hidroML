@@ -11,11 +11,10 @@ from metric import max_absolute_error
 
 from utils import sequentialize
 
-epoch = 1
 batch_size = 32
 dropout_ratio = 0.2
 
-def trasformer_training(train_x, train_y, val_x, val_y, sample_lenght, d_k, d_v, n_heads, ff_dim):
+def trasformer_training(train_x, train_y, val_x, val_y, epoch, sample_lenght, d_k, d_v, n_heads, ff_dim):
     time_embedding = Time2Vector(sample_lenght)
     attn_layer1 = TransformerEncoder(d_k, d_v, n_heads, ff_dim)
     attn_layer2 = TransformerEncoder(d_k, d_v, n_heads, ff_dim)
