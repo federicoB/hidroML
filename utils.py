@@ -5,13 +5,13 @@ def deltalize(arr):
     arr = arr[1:] - arr[:-1]
     return arr
 
-def sequentialize(arr, seq_lenght):
-    early_stopping = arr.shape[0] - seq_lenght - 1
+def sequentialize(arr, seq_lenght, look_ahead):
+    early_stopping = arr.shape[0] - seq_lenght - look_ahead + 1
     x_dataset = np.zeros((early_stopping, seq_lenght, arr.shape[1]))
-    y_dataset = np.zeros((early_stopping))
+    y_dataset = np.zeros((early_stopping,look_ahead))
     for i in range(early_stopping):
         x_dataset[i] = arr[i:i + seq_lenght]
-        y_dataset[i] = arr[i + seq_lenght + 1, 0]
+        y_dataset[i] = arr[i + seq_lenght:i+seq_lenght+look_ahead, 0]
     return x_dataset, y_dataset
 
 def split_dataset(arr,ratio):

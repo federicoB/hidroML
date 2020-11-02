@@ -9,25 +9,25 @@ from load_input import load_input
 from lstm.main_lstm import lstm_training
 
 training_data_ratio = 0.9
+sample_length = 32
+step_ahead = 1
+memory = 32
 
-pbounds = {'memory': (4,256), 'sample_lenght':(4,256)}
+pbounds = {'learning_rate': (0.01,0.09), 'momentum':(0,1)}
 
-def bayesian_wrapper(sample_length,memory):
-    sample_length = int(sample_length)
-    d_k = int(memory)
-    train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_length, training_data_ratio)
+def bayesian_wrapper(learning_rate,momentum):
+    train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_length, training_data_ratio,step_ahead)
     history, model = lstm_training(train_x,train_y,val_x,val_y,
-                        sample_length,memory)
+                        sample_length,memory,step_ahead)
 
 
-    x = model.predict(val_x).flatten()
-    difference = np.abs(x-val_y)
-    return -np.max(difference)
+    x = model.predict(val_x)
+    loss = np.mean(np.max(np.abs(x-val_y),axis=0))
+    return -loss
 
 optimizer = BayesianOptimization(
     f=bayesian_wrapper,
     pbounds=pbounds,
-    random_state=1
 )
 
 bayesian_opt_file = 'bayesian_optimization_lstm_log.json'
