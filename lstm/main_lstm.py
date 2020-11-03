@@ -4,19 +4,17 @@ from keras.models import Sequential
 import warnings
 warnings.filterwarnings('ignore')
 
-from metric import max_absolute_error
+from metric import sum_max_absolute_error
 
-epoch = 200
 batch_size = 256
 dropout_ratio = 0.2
 
-def lstm_training(train_x, train_y, val_x, val_y, sample_lenght, memory, step_ahead):
+def lstm_training(train_x, train_y, val_x, val_y, epoch, sample_lenght, memory, step_ahead):
     memory = int(memory)
     sample_lenght = int(sample_lenght)
 
     regressor = Sequential([
-        Dense(units=3, input_shape=(sample_lenght, train_x.shape[2])),
-        LSTM(units=memory, return_sequences=True, dropout=dropout_ratio),
+        LSTM(units=memory, return_sequences=True, dropout=dropout_ratio, input_shape=(sample_lenght, train_x.shape[2])),
         BatchNormalization(),
         LSTM(units=memory, dropout=dropout_ratio),
         BatchNormalization(),
@@ -24,7 +22,7 @@ def lstm_training(train_x, train_y, val_x, val_y, sample_lenght, memory, step_ah
     ])
 
 
-    regressor.compile(optimizer='adam', loss=max_absolute_error,metrics=[max_absolute_error])
+    regressor.compile(optimizer='adam', loss=sum_max_absolute_error)
     regressor.build(input_shape=(train_x.shape))
 
     # plot_model(regressor, to_file='model_plot.png', show_shapes=True, show_layer_names=True)

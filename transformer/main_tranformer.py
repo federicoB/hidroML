@@ -7,7 +7,7 @@ from transformer.trasformer import Time2Vector, TransformerEncoder
 from tensorflow.keras.layers import *
 from tensorflow.keras.models import *
 
-from metric import max_absolute_error
+from metric import sum_max_absolute_error
 
 from utils import sequentialize
 
@@ -36,7 +36,7 @@ def trasformer_training(train_x, train_y, val_x, val_y, epoch, sample_lenght, d_
     out = Dense(1, activation='linear')(x)
 
     regressor = Model(inputs=in_seq, outputs=out)
-    regressor.compile(loss='mse', optimizer='adam', metrics=[max_absolute_error])
+    regressor.compile(loss='mse', optimizer='adam', metrics=[sum_max_absolute_error])
 
 
     regressor.build(input_shape=(train_x.shape))
