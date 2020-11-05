@@ -6,10 +6,12 @@ from bayes_opt.logger import JSONLogger
 from bayes_opt.util import load_logs
 
 from load_input import load_input
-from transformer.main_tranformer import trasformer_training
+from transformer.main_transformer import transformer_training
 
 training_data_ratio = 0.9
 epoch = 3
+step_ahead = 1
+batch_size = 32
 
 pbounds = {'sample_length': (8,256), 'd_k':(4,256), 'd_v':(4,256),'n_heads':(1,8), 'ff_dim':(4,256)}
 
@@ -20,9 +22,9 @@ def bayesian_wrapper(sample_length,d_k,d_v,n_heads,ff_dim):
     d_v = int(d_v)
     n_heads = int(n_heads)
     ff_dim = int(ff_dim)
-    train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_length, training_data_ratio)
-    history, model = trasformer_training(train_x,train_y,val_x,val_y,
-                        epoch,sample_length,d_k,d_v,n_heads,ff_dim)
+    train_x, train_y, val_x, val_y, val_dates, level_start = load_input(sample_length, training_data_ratio, step_ahead)
+    history, model = transformer_training(train_x, train_y, val_x, val_y,
+                                          epoch, batch_size, sample_length, d_k, d_v, n_heads, ff_dim, step_ahead)
 
 
     x = model.predict(val_x).flatten()

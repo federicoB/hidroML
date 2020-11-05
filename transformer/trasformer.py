@@ -5,8 +5,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' #disable tensorflow INFO logs
 import warnings
 warnings.filterwarnings('ignore')
 import tensorflow as tf
-from tensorflow.keras.models import *
-from tensorflow.keras.layers import *
+from tensorflow.keras.layers import Dropout, LayerNormalization, Conv1D, Layer, Dense
 
 # output perioding and noperiod time embedding
 class Time2Vector(Layer):
@@ -22,6 +21,8 @@ class Time2Vector(Layer):
         return config
 
     def build(self, input_shape):
+        # create 4 weight matrices 2 for ω and 2 for φ
+        # look up to formula in time2vec paper
         self.weights_linear = self.add_weight(name='weight_linear',
                                               shape=(int(self.seq_len),),
                                               initializer='uniform',
@@ -43,10 +44,12 @@ class Time2Vector(Layer):
                                              trainable=True)
 
     def call(self, x):
-        x = tf.math.reduce_mean(x, axis=-1)  # Convert (batch, seq_len, n_feature) to (batch, seq_len)
+        # TODO change this
+        #x = tf.math.reduce_mean(x, axis=-1)  # Convert (batch, seq_len, n_feature) to (batch, seq_len)
+        # calculate the non-periodic (linear) time feature
         time_linear = self.weights_linear * x + self.bias_linear
         time_linear = tf.expand_dims(time_linear, axis=-1)  # (batch, seq_len, 1)
-
+        # calcualte the periodic time feature
         time_periodic = tf.math.sin(tf.multiply(x, self.weights_periodic) + self.bias_periodic)
         time_periodic = tf.expand_dims(time_periodic, axis=-1)  # (batch, seq_len, 1)
         return tf.concat([time_linear, time_periodic], axis=-1)  # (batch, seq_len, 2)
@@ -108,8 +111,7 @@ class MultiAttention(Layer):
     def build(self, input_shape):
         for n in range(self.n_heads):
             self.attn_heads.append(SingleAttention(self.d_k, self.d_v))
-        # TODO parametrize input feature now 5
-        self.linear = Dense(5, input_shape=input_shape, kernel_initializer='glorot_uniform',
+        self.linear = Dense(input_shape[0][2], input_shape=input_shape, kernel_initializer='glorot_uniform',
                             bias_initializer='glorot_uniform')
 
     def call(self, inputs):
@@ -146,9 +148,7 @@ class TransformerEncoder(Layer):
         self.attn_normalize = LayerNormalization(input_shape=input_shape, epsilon=1e-6)
 
         self.ff_conv1D_1 = Conv1D(filters=self.ff_dim, kernel_size=1, activation='relu')
-        # TODO parametrize input feature now 5, old comment: input_shape[0]=(batch, seq_len, 7), input_shape[0][-1]=7
-        # 5 because level,rain,timeofyear,periodTimemebedding,nonPerioditTimeEmbedding
-        self.ff_conv1D_2 = Conv1D(filters=5, kernel_size=1)
+        self.ff_conv1D_2 = Conv1D(filters=input_shape[0][2], kernel_size=1)
         self.ff_dropout = Dropout(self.dropout_rate)
         self.ff_normalize = LayerNormalization(input_shape=input_shape, epsilon=1e-6)
 
