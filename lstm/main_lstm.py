@@ -6,10 +6,9 @@ warnings.filterwarnings('ignore')
 
 from metric import sum_max_absolute_error
 
-batch_size = 256
 dropout_ratio = 0.2
 
-def lstm_training(train_x, train_y, val_x, val_y, epoch, sample_lenght, memory, step_ahead):
+def lstm_training(train_x, train_y, val_x, val_y, epoch, batch_size, sample_lenght, memory, step_ahead):
     memory = int(memory)
     sample_lenght = int(sample_lenght)
 
@@ -18,7 +17,7 @@ def lstm_training(train_x, train_y, val_x, val_y, epoch, sample_lenght, memory, 
         BatchNormalization(),
         LSTM(units=memory, dropout=dropout_ratio),
         BatchNormalization(),
-        Dense(step_ahead),
+        Dense(step_ahead, activation='relu'),
     ])
 
 
