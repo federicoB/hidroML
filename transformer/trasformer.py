@@ -5,7 +5,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' #disable tensorflow INFO logs
 import warnings
 warnings.filterwarnings('ignore')
 import tensorflow as tf
-from tensorflow.keras.layers import Dropout, LayerNormalization, Conv1D, Layer, Dense
+from tensorflow.keras.layers import Dropout, LayerNormalization, Layer, Dense
+
 
 # output perioding and noperiod time embedding
 class Time2Vector(Layer):
@@ -23,25 +24,14 @@ class Time2Vector(Layer):
     def build(self, input_shape):
         # create 4 weight matrices 2 for ω and 2 for φ
         # look up to formula in time2vec paper
-        self.weights_linear = self.add_weight(name='weight_linear',
-                                              shape=(int(self.seq_len),),
-                                              initializer='uniform',
-                                              trainable=True)
-
-        self.bias_linear = self.add_weight(name='bias_linear',
-                                           shape=(int(self.seq_len),),
-                                           initializer='uniform',
-                                           trainable=True)
-
-        self.weights_periodic = self.add_weight(name='weight_periodic',
-                                                shape=(int(self.seq_len),),
-                                                initializer='uniform',
-                                                trainable=True)
-
-        self.bias_periodic = self.add_weight(name='bias_periodic',
-                                             shape=(int(self.seq_len),),
-                                             initializer='uniform',
-                                             trainable=True)
+        self.weights_linear, \
+        self.bias_linear, \
+        self.weights_periodic, \
+        self.bias_periodic = \
+            [self.add_weight(name='weight_linear',
+                             shape=(int(self.seq_len),),
+                             initializer='uniform',
+                             trainable=True) for _ in range(0, 4)]
 
     def call(self, x):
         # TODO change this
@@ -147,18 +137,21 @@ class TransformerEncoder(Layer):
         self.attn_dropout = Dropout(self.dropout_rate)
         self.attn_normalize = LayerNormalization(input_shape=input_shape, epsilon=1e-6)
 
-        self.ff_conv1D_1 = Conv1D(filters=self.ff_dim, kernel_size=1, activation='relu')
-        self.ff_conv1D_2 = Conv1D(filters=input_shape[0][2], kernel_size=1)
+        self.ff_dense_1 = Dense(self.ff_dim, activation='relu')
+        n_features = input_shape[0][2]
+        self.ff_dense_2 = Dense(n_features, activation='relu')
         self.ff_dropout = Dropout(self.dropout_rate)
         self.ff_normalize = LayerNormalization(input_shape=input_shape, epsilon=1e-6)
 
     def call(self, inputs):  # inputs = (in_seq, in_seq, in_seq)
         attn_layer = self.attn_multi(inputs)
         attn_layer = self.attn_dropout(attn_layer)
+        # residual connection
         attn_layer = self.attn_normalize(inputs[0] + attn_layer)
 
-        ff_layer = self.ff_conv1D_1(attn_layer)
-        ff_layer = self.ff_conv1D_2(ff_layer)
+        ff_layer = self.ff_dense_1(attn_layer)
+        ff_layer = self.ff_dense_2(ff_layer)
         ff_layer = self.ff_dropout(ff_layer)
+        # residual connection
         ff_layer = self.ff_normalize(inputs[0] + ff_layer)
         return ff_layer
