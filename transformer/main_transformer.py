@@ -9,7 +9,7 @@ from tensorflow.keras.models import Model
 
 from tensorflow.keras.utils import plot_model
 
-from metric import sum_max_absolute_error
+from metrics import max_absolute_error, mean_absolute_error
 
 
 dropout_ratio = 0.2
@@ -39,7 +39,7 @@ def transformer_training(train_x, train_y, val_x, val_y, epoch, batch_size,
     out = Dense(step_ahead, activation='relu')(x)
 
     regressor = Model(inputs=in_seq, outputs=out)
-    regressor.compile(loss=sum_max_absolute_error, optimizer='adam')
+    regressor.compile(loss='mse', optimizer='adam', metrics=[max_absolute_error, mean_absolute_error])
     regressor.build(input_shape=(train_x.shape))
 
     plot_model(regressor,'transformer.png',show_shapes=True, expand_nested=True)
