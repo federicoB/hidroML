@@ -1,5 +1,5 @@
 import pandas as pd
-from utils import data_scale, sequentialize, split_dataset, deltalize
+from utils import data_scale, sequentialize, split_dataset
 
 basin = "enza"
 river_station = "compiano"
@@ -20,14 +20,15 @@ def load_input(sample_lenght, training_data_ratio, look_ahead):
     #rolling averange on rain and level to remove noise
     dataset_level = dataset_level.rolling(6).mean().fillna(method='bfill')
 
+    dataset_level = dataset_level.dropna()
+
+    dataset_level['level'], _ = data_scale(dataset_level['level'].values)
+    dataset_level['rain'], _ = data_scale(dataset_level['rain'].values)
     dataset_level['dayofyear'], _ = data_scale(dataset_level.index.dayofyear.values)
 
-    dataset = dataset_level.dropna()
-    dates = dataset.index.values
+    dates = dataset_level.index.values
 
-    dataset = dataset.values
-
-    level_start = dataset[0, 0]
+    dataset = dataset_level.values
 
     x_dataset, y_dataset = sequentialize(dataset, sample_lenght, look_ahead)
 
@@ -37,4 +38,4 @@ def load_input(sample_lenght, training_data_ratio, look_ahead):
 
     val_dates = dates[-val_y.shape[0]:]
 
-    return train_x, train_y, val_x, val_y, val_dates, level_start
+    return train_x, train_y, val_x, val_y, val_dates
