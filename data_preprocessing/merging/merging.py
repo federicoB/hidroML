@@ -2,10 +2,10 @@ import pandas as pd
 
 # ONLY CHANGE THIS VARIABLES
 data_type = "level"
-basin = "enza"
-station = "compiano"
-start_year = 2013
-end_year = 2016
+basin = "reno"
+station = "casalecchio-chiusa"
+start_year = 2006
+end_year = 2019
 
 folder = "data/{}/{}/{}".format(data_type,basin,station)
 input_list = ["{}/{}.csv".format(folder,year) for year in range(start_year,end_year+1)]

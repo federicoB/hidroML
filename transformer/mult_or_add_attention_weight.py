@@ -1,5 +1,0 @@
-#normal add
-
-
-
-# multiplicative
