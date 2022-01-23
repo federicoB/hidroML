@@ -1,8 +1,3 @@
-# TODO avoid this
-import os
-import sys
-
-sys.path.append(os.getcwd())
 import argparse
 import keras.backend as K
 from src.models.definitions.feed_forward import get_feed_forward_model
@@ -16,7 +11,6 @@ training_data_ratio = 0.9
 sample_length = 128
 step_ahead = 3
 batch_size = 32
-epoch = 1
 
 
 def max_absolute_error(y_true, y_pred):
@@ -31,7 +25,8 @@ def mean_absolute_error(y_true, y_pred):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', choices=['ff', 'lstm', 'tcn', 'transformer'], default='tcn')
+    parser.add_argument('-m','--model', choices=['ff', 'lstm', 'tcn', 'transformer'], default='tcn')
+    parser.add_argument('-e','--epochs', type=int, default=3)
     args = vars(parser.parse_args())
 
     if args['model'] == 'ff':
@@ -43,6 +38,8 @@ if __name__ == "__main__":
     elif args['model'] == 'transformer':
         model = get_transformer_model(sample_length, step_ahead)
 
+    epochs = args['epochs']
+
     train_x, train_y, val_x, val_y, val_dates = \
         load_input(sample_length, training_data_ratio, step_ahead)
 
@@ -51,6 +48,6 @@ if __name__ == "__main__":
     early_stopping = EarlyStopping(monitor='loss', min_delta=0.00001, patience=3, restore_best_weights=True)
     history = model.fit(train_x, train_y,
                         validation_data=(val_x, val_y),
-                        epochs=epoch, batch_size=batch_size, callbacks=[early_stopping])
+                        epochs=epochs, batch_size=batch_size, callbacks=[early_stopping])
 
     model.save("models/{}".format(args['model']))

@@ -1,9 +1,3 @@
-# TODO avoid this
-import os
-import sys
-
-sys.path.append(os.getcwd())
-# TODO get the prediction from predict_model
 import numpy as np
 import matplotlib.pyplot as plt
 from src.models.predict_model import get_prediction
