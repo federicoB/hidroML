@@ -10,7 +10,7 @@ def doubleDense(units, x):
     return x
 
 
-def get_transformer_model(sample_length, step_ahead):
+def get_transformer_model(sample_length, step_ahead=3):
     # TODO make it as class
 
     def transformer_regression(units, x):

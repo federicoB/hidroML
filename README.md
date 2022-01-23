@@ -8,7 +8,11 @@ Every year million of people are involved in floods resulting in property damage
 
 ## Read the full article [here](https://github.com/federicoB/hidroML/blob/master/Watercourse%20behavior%20modeling%20using%20sequence%20prediction%20networks.pdf)
 
-Model structure:
+## Model structure:
 
 ![image](https://user-images.githubusercontent.com/15829877/112234237-5cee9c80-8c3c-11eb-86e9-999e982952fd.png)
 
+## Directory structure
+
+This repo's structure follows what's recommended
+by [Cookie Cutter Data Science](https://drivendata.github.io/cookiecutter-data-science/).

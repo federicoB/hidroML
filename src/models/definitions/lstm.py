@@ -9,7 +9,7 @@ def doubleDense(units, x):
     return x
 
 
-def get_lstm_model(sample_length, memory_units, step_ahead):
+def get_lstm_model(sample_length, step_ahead=3, memory_units=8):
     # TODO make it as class
 
     def LSTM_layer_wrapper(units, x):

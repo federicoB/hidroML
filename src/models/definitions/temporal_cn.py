@@ -10,7 +10,7 @@ def doubleDense(units, x):
     return x
 
 
-def get_tcn_model(sample_length, inner_encoding, step_ahead):
+def get_tcn_model(sample_length, step_ahead=3, inner_encoding=8):
     # TODO make it as class
 
     def TCN_layer(units, x):

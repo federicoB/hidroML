@@ -8,7 +8,8 @@ def doubleDense(units, x):
     return x
 
 
-def get_feed_forward_model(sample_length, inner_dimension, step_ahead):
+# TODO make variables for default values
+def get_feed_forward_model(sample_length=128, step_ahead=3, inner_dimension=8):
     # TODO make it as class
 
     def encoding(units, x):
