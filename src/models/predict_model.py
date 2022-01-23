@@ -1,12 +1,3 @@
-rom
-src.models.train_model
-import sample_length, training_data_ratio, step_ahead, \
-    max_absolute_error, mean_absolute_error
-from src.data.make_dataset import load_input
-# TODO load model from file
-import argparse
-from tensorflow import keras
-# TODO load model from file
 import argparse
 
 from tensorflow import keras
